@@ -6,17 +6,9 @@ from sqlalchemy import create_engine
 from eralchemy2 import render_er
 
 Base = declarative_base()
-class Favoritos_Personajes(Base):
-    __tablename__ = 'favoritos_personaje'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
-    user_id = Column(ForeignKey('users.id'), primary_key=True)
-    character_id = Column(ForeignKey('characters.id'), primary_key=True)
-    character = relationship('Character', back_populates='users')
-    user = relationship('User', back_populates='characters')
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
@@ -25,11 +17,18 @@ class User(Base):
     username = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     password = Column(String(250), nullable=False)
-    characters = relationship('Favoritos_Personajes', back_populates='user')
+    favorito = relationship("Favoritos_Personajes")
 
+class Favoritos_Personajes(Base):
+    __tablename__ = 'favorito_personaje'
+    # Here we define columns for the table person
+    # Notice that each column is also a normal Python instance attribute.
+    id = Column(Integer, primary_key=True)
+    user = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    personaje = Column(Integer, ForeignKey('character.id', primary_key=True))
 
 class Character(Base):
-    __tablename__ = 'characters'
+    __tablename__ = 'character'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
@@ -38,8 +37,9 @@ class Character(Base):
     gender = Column(String(250), nullable=False)
     species = Column(String(250), nullable=False)
     origin =  Column(String(250), nullable=False)
-    favorito = relationship('Favoritos_Personajes')
-    users = relationship('Favoritos_Personajes', back_populates='character')
+    favorito = relationship("Favoritos_Personajes")
+
+
 
 
 def to_dict(self):
